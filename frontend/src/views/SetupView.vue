@@ -137,8 +137,8 @@ async function finish() {
 </script>
 
 <template>
-	<div class="min-h-screen flex items-center justify-center bg-background p-6">
-		<div class="w-full max-w-lg flex flex-col gap-8">
+	<div class="min-h-dvh flex items-center justify-center bg-background p-4 sm:p-6">
+		<div class="w-full max-w-lg flex flex-col gap-5 sm:gap-8">
 
 			<!-- 标题 / Title -->
 			<div class="flex flex-col gap-1.5">
@@ -146,7 +146,7 @@ async function finish() {
 					<span class="w-3 h-3 rounded-full bg-destructive shrink-0" />
 					<span class="text-lg font-bold">StripchatRecorder</span>
 				</div>
-				<h1 class="text-2xl font-bold mt-1">{{ t("setup.title") }}</h1>
+				<h1 class="text-xl font-bold mt-1 sm:text-2xl">{{ t("setup.title") }}</h1>
 				<p class="text-sm text-muted-foreground">{{ t("setup.subtitle") }}</p>
 			</div>
 
@@ -252,7 +252,7 @@ async function finish() {
 			<p v-if="error" class="text-sm text-destructive -mt-2">{{ error }}</p>
 
 			<!-- 导航按钮 / Navigation buttons -->
-			<div class="flex items-center justify-between">
+			<div class="flex items-center justify-between gap-2">
 				<Button variant="ghost" :disabled="step === 1" @click="back">
 					{{ t("setup.back") }}
 				</Button>

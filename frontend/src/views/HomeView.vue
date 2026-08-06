@@ -129,14 +129,14 @@
 
 <template>
 	<div class="flex flex-col gap-5">
-		<header class="flex items-start justify-between">
+		<header class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
 			<div>
 				<h1 class="text-xl font-bold mb-0.5">{{ t("home.title") }}</h1>
 				<p class="text-sm text-muted-foreground">
 					{{ t("home.subtitle", { total: store.streamers.length, recording: store.streamers.filter((s) => s.is_recording).length }) }}
 				</p>
 			</div>
-			<Button @click="showAdd = true">{{ t("home.addStreamer") }}</Button>
+			<Button class="w-full sm:w-auto" @click="showAdd = true">{{ t("home.addStreamer") }}</Button>
 		</header>
 
 		<div
@@ -151,12 +151,12 @@
 			class="text-center text-muted-foreground py-16 flex flex-col items-center gap-3"
 		>
 			<p>{{ t("home.noStreamers") }}</p>
-			<Button @click="showAdd = true">{{ t("home.addFirst") }}</Button>
+			<Button class="w-full sm:w-auto" @click="showAdd = true">{{ t("home.addFirst") }}</Button>
 		</div>
 
 		<div
 			v-else
-			class="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-3.5"
+			class="grid grid-cols-1 gap-3.5 sm:grid-cols-[repeat(auto-fill,minmax(260px,1fr))]"
 		>
 			<StreamerCard
 				v-for="s in [...store.streamers].sort((a, b) =>

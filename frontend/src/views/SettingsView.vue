@@ -289,7 +289,7 @@
 </script>
 
 <template>
-	<div class="flex flex-col gap-5 max-w-160">
+	<div class="flex w-full min-w-0 max-w-160 flex-col gap-5">
 		<h1 class="text-xl font-bold">{{ t("settings.title") }}</h1>
 
 		<div v-if="store.loading" class="text-muted-foreground">{{ t("settings.loading") }}</div>
@@ -347,7 +347,7 @@
 						:model-value="form.max_concurrent"
 						:min="0"
 						:max="50"
-						class="w-32"
+						class="w-full sm:w-32"
 						@update:model-value="
 							(v) => v !== undefined && (form.max_concurrent = v)
 						"
@@ -367,7 +367,7 @@
 						:model-value="form.poll_interval_secs"
 						:min="10"
 						:max="300"
-						class="w-32"
+						class="w-full sm:w-32"
 						@update:model-value="
 							(v) => v !== undefined && (form.poll_interval_secs = v)
 						"
@@ -409,7 +409,7 @@
 						:model-value="form.max_tmp_dir_gb"
 						:min="0"
 						:step="0.5"
-						class="w-36"
+						class="w-full sm:w-36"
 						@update:model-value="
 							(v) => v !== undefined && (form.max_tmp_dir_gb = v)
 						"
@@ -519,7 +519,7 @@
 				</div>
 
 				<!-- 同步状态 + 手动同步按钮 / Sync status + manual sync button -->
-				<div class="flex items-center justify-between gap-4 text-xs text-muted-foreground">
+				<div class="flex flex-col items-start gap-3 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:gap-4">
 					<div class="flex flex-col gap-0.5">
 						<span>{{ t("settings.mouflonAutoSyncedAt") }}{{ formatTs(mouflonStore.auto_synced_at) }}</span>
 						<span>{{ t("settings.mouflonManualUpdatedAt") }}{{ formatTs(mouflonStore.manual_updated_at) }}</span>
@@ -537,7 +537,7 @@
 
 				<table
 					v-if="Object.keys(mouflonStore.keys).length"
-					class="w-full text-xs border-collapse"
+					class="block w-full overflow-x-auto whitespace-nowrap text-xs border-collapse"
 				>
 					<thead>
 						<tr>
@@ -576,7 +576,7 @@
 				</table>
 				<p v-else class="text-xs text-muted-foreground">{{ t("settings.noKeys") }}</p>
 
-				<div class="flex gap-2 items-center">
+				<div class="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
 					<Input
 						v-model="newPkey"
 						placeholder="pkey"
@@ -589,7 +589,7 @@
 						autocomplete="off"
 						class="flex-2 font-mono text-xs"
 					/>
-					<Button type="button" variant="outline" @click="addKey">{{ t("settings.addKey") }}</Button>
+					<Button type="button" variant="outline" class="w-full sm:w-auto" @click="addKey">{{ t("settings.addKey") }}</Button>
 				</div>
 				<p v-if="keyError" class="text-xs text-destructive">{{ keyError }}</p>
 			</section>

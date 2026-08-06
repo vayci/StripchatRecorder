@@ -191,6 +191,23 @@
   transform: scale(1.01);
 }
 
+.mobile-nav-enter-active,
+.mobile-nav-leave-active {
+  transition: opacity 0.18s ease;
+}
+.mobile-nav-enter-active aside,
+.mobile-nav-leave-active aside {
+  transition: transform 0.18s ease;
+}
+.mobile-nav-enter-from,
+.mobile-nav-leave-to {
+  opacity: 0;
+}
+.mobile-nav-enter-from aside,
+.mobile-nav-leave-to aside {
+  transform: translateX(-100%);
+}
+
 /* setup 步骤向前滑动 / Setup step forward slide */
 .step-forward-enter-active,
 .step-forward-leave-active {

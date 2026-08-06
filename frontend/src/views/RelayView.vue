@@ -199,9 +199,9 @@
 		</header>
 
 		<!-- 转发流提示 / Relay hint -->
-		<div class="rounded-lg border border-blue-900/40 bg-blue-950/20 px-4 py-3 text-sm text-blue-300/80">
+		<div class="rounded-lg border border-blue-900/40 bg-blue-950/20 px-3 py-3 text-sm text-blue-300/80 sm:px-4">
 			<p>{{ t("relay.hint") }}</p>
-			<p class="mt-1 font-mono text-xs text-blue-400/60">
+			<p class="mt-1 break-all font-mono text-xs text-blue-400/60">
 				{{ exampleUrl }}
 			</p>
 		</div>
@@ -221,7 +221,7 @@
 
 		<div
 			v-else
-			class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-3.5"
+			class="grid grid-cols-1 gap-3.5 sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))]"
 		>
 			<Card
 				v-for="session in [...sessions].sort((a, b) => a.username.localeCompare(b.username))"
@@ -233,9 +233,9 @@
 					'border-red-900/50': session.stream_state.type === 'error',
 				}"
 			>
-				<CardContent class="p-4 flex flex-col gap-3">
+				<CardContent class="p-3 sm:p-4 flex flex-col gap-3">
 					<!-- 主播名 + 状态 / Username + state -->
-					<div class="flex items-center justify-between gap-2">
+					<div class="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
 						<div class="flex items-center gap-2 min-w-0">
 							<!-- 状态图标 / State icon -->
 							<component
@@ -253,7 +253,7 @@
 							/>
 							<span class="font-semibold text-sm truncate">{{ session.username }}</span>
 						</div>
-						<div class="flex items-center gap-1.5 shrink-0">
+						<div class="flex flex-wrap items-center gap-1.5 sm:shrink-0">
 							<!-- 主播真实状态（后端实时查询）/ Streamer real status (real-time from backend) -->
 							<Badge
 								variant="outline"

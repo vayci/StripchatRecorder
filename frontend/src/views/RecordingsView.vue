@@ -30,7 +30,7 @@
 	import { Button } from "@/components/ui/button";
 	import { Badge } from "@/components/ui/badge";
 	import { Checkbox } from "@/components/ui/checkbox";
-	import { Loader2, Image } from "@lucide/vue";
+	import { ChevronDown, ChevronRight, Loader2, Image } from "@lucide/vue";
 	import { Progress } from "@/components/ui/progress";
 	import {
 		Dialog,
@@ -671,7 +671,7 @@
 
 		<header
 			ref="headerEl"
-			class="flex items-start justify-between gap-4 shrink-0 pb-4 bg-background sticky top-0 z-20"
+			class="sticky top-0 z-20 flex shrink-0 flex-col gap-3 bg-background pb-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4"
 		>
 			<div class="flex-1 min-w-0">
 				<h1 class="text-xl font-bold mb-0.5">{{ t("recordings.title") }}</h1>
@@ -717,7 +717,7 @@
 					</span>
 				</div>
 			</div>
-			<div class="flex gap-2 shrink-0">
+			<div class="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:shrink-0">
 				<Button
 					v-if="selectedCount > 0"
 					variant="outline"
@@ -752,7 +752,171 @@
 				{{ t("recordings.empty") }}
 			</div>
 
-			<Table v-else>
+			<template v-else>
+			<div class="flex flex-col gap-4 lg:hidden">
+				<section v-for="group in groups" :key="group.username" class="flex flex-col gap-2">
+					<div class="flex items-center gap-2 border-b border-border pb-2">
+						<Checkbox
+							:model-value="getGroupChecked(group)"
+							@update:model-value="setGroupChecked(group)"
+						/>
+						<button
+							type="button"
+							class="flex min-w-0 flex-1 items-center gap-2 text-left"
+							@click="toggleGroup(group.username)"
+						>
+							<ChevronRight v-if="collapsedGroups.has(group.username)" class="size-4 shrink-0 text-muted-foreground" />
+							<ChevronDown v-else class="size-4 shrink-0 text-muted-foreground" />
+							<span class="truncate text-sm font-semibold">{{ group.username }}</span>
+							<Badge v-if="group.hasRecording" variant="destructive" class="shrink-0 text-[10px]">
+								{{ t("recordings.status.recording") }}
+							</Badge>
+							<span class="ml-auto shrink-0 text-xs text-muted-foreground">
+								{{ t("recordings.group.fileCount", { count: group.files.length }) }} · {{ formatSize(group.totalSize) }}
+							</span>
+						</button>
+					</div>
+
+					<div v-if="!collapsedGroups.has(group.username)" class="flex flex-col gap-2">
+						<article
+							v-for="f in group.files"
+							:key="f.path"
+							class="rounded-md border border-border bg-card p-3"
+						>
+							<div class="flex min-w-0 items-start gap-2">
+								<Checkbox
+									class="mt-0.5"
+									:model-value="getFileChecked(f.path)"
+									:disabled="f.is_recording || f.status === 'merging_waiting' || f.status === 'merging'"
+									@update:model-value="setFileChecked(f.path)"
+								/>
+								<div class="min-w-0 flex-1">
+									<div class="flex min-w-0 flex-wrap items-center gap-1.5">
+										<span class="min-w-0 flex-1 truncate text-sm font-medium" :title="f.name">{{ f.name }}</span>
+										<Badge v-if="f.is_recording" variant="destructive" class="shrink-0 text-[10px]">
+											{{ t("recordings.status.recording") }}
+										</Badge>
+										<Badge v-else-if="f.status === 'merging_waiting' || f.status === 'merging'" variant="outline" class="shrink-0 text-[10px]">
+											{{ f.status === "merging_waiting" ? t("recordings.status.waitingMerge") : t("recordings.status.merging") }}
+										</Badge>
+									</div>
+									<p class="mt-1 text-xs text-muted-foreground">{{ new Date(f.started_at).toLocaleString() }}</p>
+								</div>
+							</div>
+
+							<div v-if="f.status === 'merging_waiting' || f.status === 'merging'" class="mt-3 flex flex-col gap-2 border-t border-border pt-3">
+								<div class="flex items-center gap-2 text-xs text-muted-foreground">
+									<Loader2 class="size-3.5 shrink-0 animate-spin" />
+									<span>{{ f.status === "merging_waiting" ? t("recordings.status.waitingMergeVideo") : t("recordings.status.mergingVideo") }}</span>
+									<span v-if="f.status === 'merging' && mergeProgress[f.path]" class="ml-auto tabular-nums">
+										{{ mergeProgress[f.path].total_bytes > 0
+											? `${Math.min(99, Math.floor(mergeProgress[f.path].out_bytes / mergeProgress[f.path].total_bytes * 10000) / 100).toFixed(2)}%`
+											: "0.00%" }}
+									</span>
+								</div>
+								<Progress
+									v-if="f.status === 'merging' && mergeProgress[f.path]"
+									:model-value="mergeProgress[f.path].total_bytes > 0 ? Math.min(99, mergeProgress[f.path].out_bytes / mergeProgress[f.path].total_bytes * 100) : 0"
+									class="h-1.5"
+								/>
+							</div>
+
+							<template v-else>
+								<dl class="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 border-t border-border pt-3 text-xs">
+									<div>
+										<dt class="text-muted-foreground">{{ t("recordings.table.size") }}</dt>
+										<dd class="mt-0.5 tabular-nums">{{ formatSize(f.size_bytes) }}</dd>
+									</div>
+									<div>
+										<dt class="text-muted-foreground">{{ t("recordings.table.recordDuration") }}</dt>
+										<dd class="mt-0.5 tabular-nums" :class="f.is_recording ? 'text-destructive' : ''">
+											{{ f.is_recording ? formatDuration(elapsed[f.path] ?? 0) : f.record_duration_secs != null ? formatDuration(f.record_duration_secs) : "—" }}
+										</dd>
+									</div>
+									<div>
+										<dt class="text-muted-foreground">{{ t("recordings.table.videoDuration") }}</dt>
+										<dd class="mt-0.5 tabular-nums">{{ f.video_duration_secs != null ? formatDuration(f.video_duration_secs) : "—" }}</dd>
+									</div>
+									<div>
+										<dt class="text-muted-foreground">{{ t("recordings.table.speed") }}</dt>
+										<dd class="mt-0.5 tabular-nums">{{ f.is_recording && recordingSpeed[f.path] != null ? `${formatSize(recordingSpeed[f.path])}/s` : "—" }}</dd>
+									</div>
+								</dl>
+
+								<div v-if="!f.is_recording" class="mt-3 border-t border-border pt-3">
+									<div v-if="ppStatus[f.path] === 'running' && ppProgress[f.path]" class="flex flex-col gap-1.5">
+										<div class="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+											<span class="truncate">{{ ppProgress[f.path].moduleName === "processing" ? t("usePostprocess.processing") : ppProgress[f.path].moduleName }}</span>
+											<span class="shrink-0 tabular-nums">{{ ppProgress[f.path].overallLabel }}</span>
+										</div>
+										<Progress :model-value="ppProgress[f.path].overallPct" :animated="false" class="h-1.5" />
+									</div>
+									<div v-else-if="ppStatus[f.path] === 'waiting'" class="flex items-center gap-1.5 text-xs text-muted-foreground">
+										<Loader2 class="size-3 animate-spin" />
+										<span>{{ t("recordings.status.waiting") }}</span>
+									</div>
+									<div v-else-if="ppStatus[f.path] === 'done' || ppStatus[f.path] === 'error'" class="flex flex-wrap gap-1.5">
+										<template v-if="ppProgress[f.path]?.moduleResults?.length">
+											<span
+												v-for="result in ppProgress[f.path].moduleResults"
+												:key="result.moduleId"
+												class="rounded bg-muted px-1.5 py-0.5 text-xs"
+												:class="result.success ? 'text-green-500' : 'text-destructive'"
+												:title="result.success ? result.moduleId : `${result.moduleId}: ${result.message}`"
+											>
+												{{ result.success ? "✓" : "✗" }} {{ result.moduleId }}
+											</span>
+										</template>
+										<span v-else class="text-xs" :class="ppStatus[f.path] === 'done' ? 'text-green-500' : 'text-destructive'">
+											{{ ppStatus[f.path] === "done" ? t("recordings.status.done") : t("recordings.status.failed") }}
+										</span>
+									</div>
+								</div>
+
+								<div class="mt-3 grid grid-cols-2 gap-2">
+									<Button
+										size="sm"
+										variant="outline"
+										:disabled="f.is_recording"
+										@click="openFile(f.path)"
+									>
+										{{ t("recordings.actions.play") }}
+									</Button>
+									<Button
+										v-if="moduleOutputs[f.path]?.['contact_sheet']"
+										size="sm"
+										variant="outline"
+										title="Contact Sheet"
+										@click="openModuleOutput(f.path, 'contact_sheet')"
+									>
+										<Image class="size-3.5" />
+									</Button>
+									<Button
+										size="sm"
+										variant="outline"
+										:disabled="f.is_recording || ppStatus[f.path] === 'running' || ppStatus[f.path] === 'waiting'"
+										@click="runPostprocess(f.path)"
+									>
+										<Loader2 v-if="ppStatus[f.path] === 'running'" class="size-3.5 animate-spin" />
+										<span v-else>{{ t("recordings.actions.postprocess") }}</span>
+									</Button>
+									<Button
+										size="sm"
+										variant="destructive"
+										:disabled="f.is_recording"
+										@click="deleteFile(f)"
+									>
+										{{ t("recordings.actions.delete") }}
+									</Button>
+								</div>
+							</template>
+						</article>
+					</div>
+				</section>
+			</div>
+
+			<div class="hidden overflow-x-auto lg:block">
+				<Table>
 				<TableHeader
 					class="sticky z-10 bg-background"
 					:style="{ top: `${headerHeight}px` }"
@@ -1087,6 +1251,8 @@
 					</template>
 				</TableBody>
 			</Table>
+			</div>
+		</template>
 		</div>
 	</div>
 </template>

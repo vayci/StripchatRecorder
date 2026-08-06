@@ -178,14 +178,14 @@
 
 <template>
 	<div class="flex flex-col gap-6">
-		<header class="flex items-start justify-between">
+		<header class="flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between">
 			<div>
 				<h1 class="text-xl font-bold mb-0.5">{{ t("postprocess.title") }}</h1>
 				<p class="text-sm text-muted-foreground">
 					{{ t("postprocess.description") }}
 				</p>
 			</div>
-			<span class="text-sm text-muted-foreground mt-0.5">
+			<span class="shrink-0 text-sm text-muted-foreground sm:mt-0.5">
 				{{ store.saving ? t("postprocess.saving") : t("postprocess.saved") }}
 			</span>
 		</header>
@@ -211,7 +211,7 @@
 				@dragend="onDragEnd"
 			>
 				<div
-					class="border-2 rounded-xl p-4 bg-card transition-opacity"
+					class="border-2 rounded-xl p-3 sm:p-4 bg-card transition-opacity"
 					:class="[
 						!node.enabled && 'opacity-50',
 						dragIndex === idx ? 'opacity-30' : '',
@@ -222,14 +222,14 @@
 								: 'border-transparent',
 					]"
 				>
-					<div class="flex items-center gap-3">
+					<div class="flex flex-wrap items-center gap-3">
 						<GripVertical
 							class="cursor-grab text-muted-foreground select-none size-5"
 							@mousedown="isDraggingHandle = true"
 							@mouseup="isDraggingHandle = false"
 						/>
 
-						<div class="flex-1 min-w-0">
+						<div class="min-w-0 flex-1 basis-[calc(100%-2rem)] sm:basis-auto">
 							<div class="flex items-center gap-2">
 								<span
 									class="font-medium text-sm"
@@ -254,7 +254,7 @@
 							</p>
 						</div>
 
-						<div class="flex items-center gap-2 shrink-0">
+						<div class="ml-8 flex w-[calc(100%-2rem)] flex-wrap items-center justify-end gap-1.5 sm:ml-0 sm:w-auto sm:shrink-0 sm:gap-2">
 							<Button
 								variant="ghost"
 								size="icon"
@@ -292,7 +292,7 @@
 
 					<div
 						v-if="info?.params.length"
-						class="mt-3 grid grid-cols-2 gap-x-4 gap-y-3"
+						class="mt-3 grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2"
 					>
 						<template
 							v-for="param in info.params"

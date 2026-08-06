@@ -29,6 +29,7 @@
 	import { loadLocaleFromServer } from "@/i18n";
 	import { useModuleLocaleStore } from "@/stores/moduleLocale";
 	import { useLocalesStore } from "@/stores/locales";
+	import { Menu, X } from "@lucide/vue";
 
 	const router = useRouter();
 	const route = useRoute();
@@ -37,6 +38,7 @@
 	const { t, locale } = useI18n();
 	const moduleLocaleStore = useModuleLocaleStore();
 	const localesStore = useLocalesStore();
+	const mobileNavOpen = ref(false);
 
 	const mainScrollEl = ref<HTMLElement | null>(null);
 	useScrollbar(mainScrollEl);
@@ -50,6 +52,11 @@
 		{ to: "/finder", labelKey: "nav.finder" },
 		{ to: "/settings", labelKey: "nav.settings" },
 	];
+
+	function navigate(to: string) {
+		mobileNavOpen.value = false;
+		router.push(to);
+	}
 
 	/**
 	 * 根据参数切换文档根元素的 dark 类，实现深色/浅色主题切换。
@@ -233,9 +240,9 @@
 		</div>
 
 		<!-- 正常布局：侧边栏 + 内容区 / Normal layout: sidebar + content -->
-		<div v-else key="main" class="flex h-screen overflow-hidden">
+		<div v-else key="main" class="flex h-dvh min-w-0 overflow-hidden">
 			<aside
-				class="w-44 shrink-0 bg-sidebar border-r border-sidebar-border flex flex-col p-3 gap-1"
+				class="hidden w-44 shrink-0 bg-sidebar border-r border-sidebar-border md:flex flex-col p-3 gap-1"
 			>
 				<div
 					class="flex items-center gap-2 px-1 py-4 mb-1 border-b border-sidebar-border"
@@ -256,21 +263,82 @@
 								? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold'
 								: 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
 						"
-						@click="router.push(item.to)"
+						@click="navigate(item.to)"
 					>
 						{{ t(item.labelKey) }}
 					</Button>
 				</nav>
 			</aside>
-			<main class="flex-1 overflow-hidden">
-				<div ref="mainScrollEl" class="h-full overflow-y-scroll p-6 scrollbar-overlay">
-					<RouterView v-slot="{ Component }">
-						<Transition name="page" mode="out-in">
-							<component :is="Component" :key="route.path" />
-						</Transition>
-					</RouterView>
+			<div class="flex min-w-0 flex-1 flex-col">
+				<header class="flex h-14 shrink-0 items-center justify-between border-b border-sidebar-border bg-sidebar px-3 md:hidden">
+					<div class="flex min-w-0 items-center gap-2">
+						<span class="h-2.5 w-2.5 shrink-0 rounded-full bg-destructive" />
+						<span class="truncate text-sm font-bold text-sidebar-foreground">StripchatRecorder</span>
+					</div>
+					<Button
+						variant="ghost"
+						size="icon"
+						class="h-9 w-9 shrink-0"
+						aria-label="打开导航"
+						@click="mobileNavOpen = true"
+					>
+						<Menu class="size-5" />
+					</Button>
+				</header>
+				<main class="min-h-0 min-w-0 flex-1 overflow-hidden">
+					<div ref="mainScrollEl" class="h-full overflow-y-scroll p-3 sm:p-4 md:p-6 scrollbar-overlay">
+						<RouterView v-slot="{ Component }">
+							<Transition name="page" mode="out-in">
+								<component :is="Component" :key="route.path" />
+							</Transition>
+						</RouterView>
+					</div>
+				</main>
+			</div>
+
+			<Transition name="mobile-nav">
+				<div v-if="mobileNavOpen" class="fixed inset-0 z-50 md:hidden">
+					<button
+						type="button"
+						class="absolute inset-0 bg-black/55"
+						aria-label="关闭导航"
+						@click="mobileNavOpen = false"
+					/>
+					<aside class="relative flex h-full w-64 max-w-[82vw] flex-col gap-1 border-r border-sidebar-border bg-sidebar p-3 shadow-xl">
+						<div class="mb-1 flex items-center justify-between gap-2 border-b border-sidebar-border px-1 py-3">
+							<div class="flex min-w-0 items-center gap-2">
+								<span class="h-2.5 w-2.5 shrink-0 rounded-full bg-destructive" />
+								<span class="truncate text-sm font-bold text-sidebar-foreground">StripchatRecorder</span>
+							</div>
+							<Button
+								variant="ghost"
+								size="icon"
+								class="h-9 w-9 shrink-0"
+								aria-label="关闭导航"
+								@click="mobileNavOpen = false"
+							>
+								<X class="size-5" />
+							</Button>
+						</div>
+						<nav class="flex flex-col gap-1">
+							<Button
+								v-for="item in navItems"
+								:key="item.to"
+								variant="ghost"
+								class="h-11 w-full justify-start text-sm font-normal"
+								:class="
+									route.path === item.to
+										? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold'
+										: 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/50'
+								"
+								@click="navigate(item.to)"
+							>
+								{{ t(item.labelKey) }}
+							</Button>
+						</nav>
+					</aside>
 				</div>
-			</main>
+			</Transition>
 			<NotifyLayer />
 		</div>
 

@@ -47,6 +47,10 @@
 
 	const thumbnailSrc = computed(() => props.streamer.thumbnail_url ?? null);
 	const fastThumbnail = useFastThumbnail(thumbnailSrc);
+	// 主播原始页面地址
+	const profileUrl = computed(
+		() => `https://zh.stripchat.com/${encodeURIComponent(props.streamer.username)}`,
+	);
 
 	const copied = ref(false);
 
@@ -104,7 +108,15 @@
 
 		<CardContent class="p-3 flex flex-col gap-2">
 			<div class="flex items-center justify-between">
-				<span class="font-semibold text-sm truncate">{{ streamer.username }}</span>
+				<a
+					:href="profileUrl"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="min-w-0 flex-1 truncate text-sm font-semibold hover:underline"
+					:title="streamer.username"
+				>
+					{{ streamer.username }}
+				</a>
 				<Button
 					variant="ghost"
 					size="icon"

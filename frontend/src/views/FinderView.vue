@@ -421,7 +421,7 @@ async function openSimilarDialog(m: ModelResult) {
 </script>
 
 <template>
-  <div class="flex flex-col gap-5" @paste.capture="onPaste">
+  <div class="flex min-w-0 flex-col gap-5" @paste.capture="onPaste">
     <!-- Header -->
     <header>
       <h1 class="text-xl font-bold mb-0.5">{{ t("finder.title") }}</h1>
@@ -498,7 +498,7 @@ async function openSimilarDialog(m: ModelResult) {
       <!-- Face results -->
       <template v-if="faceResults.length > 0">
         <p class="text-sm text-muted-foreground">{{ t("finder.face.results", { count: faceResults.length }) }}</p>
-        <div class="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(240px,1fr))]">
           <div
             v-for="(p, i) in faceResults"
             :key="i"
@@ -588,7 +588,7 @@ async function openSimilarDialog(m: ModelResult) {
       <!-- Name results -->
       <template v-if="nameResults.length > 0">
         <p class="text-sm text-muted-foreground">{{ t("finder.name.results", { count: nameResults.length }) }}</p>
-        <div class="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(240px,1fr))]">
           <Button
             v-for="(m, i) in nameResults"
             :key="i"
@@ -633,7 +633,7 @@ async function openSimilarDialog(m: ModelResult) {
     <Dialog v-model:open="dialogOpen">
       <DialogContent
         class="p-0 flex flex-col overflow-hidden"
-        style="height: 90vh; width: calc(90vh * 16 / 9); max-width: 96vw;"
+        style="height: 90dvh; width: calc(90dvh * 16 / 9); max-width: 96vw;"
       >
         <!-- Header -->
         <div class="flex items-center gap-3 px-5 py-3 border-b border-border shrink-0">
@@ -648,13 +648,13 @@ async function openSimilarDialog(m: ModelResult) {
         </div>
 
         <!-- Body -->
-        <div class="flex flex-1 min-h-0">
+        <div class="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
           <!-- Left: source model info -->
-          <div class="w-52 shrink-0 border-r border-border flex flex-col gap-3 p-4">
+          <div class="flex w-full shrink-0 items-center gap-3 border-b border-border p-3 md:w-52 md:flex-col md:items-stretch md:border-r md:border-b-0 md:p-4">
             <img
               v-if="dialogFaceImage"
               :src="dialogFaceImage"
-              class="w-full aspect-square rounded object-cover border border-border"
+              class="size-16 shrink-0 rounded object-cover border border-border md:size-auto md:w-full md:aspect-square"
               alt=""
             />
             <div v-if="dialogModel" class="flex flex-col gap-1">
@@ -673,7 +673,7 @@ async function openSimilarDialog(m: ModelResult) {
             </div>
             <Button
               variant="outline"
-              class="mt-auto flex items-center gap-1.5 text-xs px-2 py-1 w-fit h-auto"
+              class="ml-auto flex h-auto w-fit items-center gap-1.5 px-2 py-1 text-xs md:mt-auto md:ml-0"
               :class="bgMode ? 'border-primary bg-primary/10 text-primary' : ''"
               @click="bgMode = !bgMode"
             >
@@ -701,7 +701,7 @@ async function openSimilarDialog(m: ModelResult) {
                 {{ t("finder.dialog.results", { count: dialogResults.length }) }}
               </div>
               <div ref="dialogScrollEl" class="overflow-y-auto flex-1 px-4 pb-4 scrollbar-overlay">
-                <div class="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-2">
+                <div class="grid grid-cols-1 gap-2 sm:grid-cols-[repeat(auto-fill,minmax(180px,1fr))]">
                   <div
                     v-for="(p, i) in dialogResults"
                     :key="i"
