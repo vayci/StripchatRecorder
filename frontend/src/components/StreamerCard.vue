@@ -96,7 +96,7 @@
 			/>
 			<div
 				v-else
-				class="w-full h-full flex items-center justify-center text-4xl font-bold text-muted-foreground/20"
+				class="w-full h-full flex items-center justify-center text-2xl font-bold text-muted-foreground/20 sm:text-4xl"
 			>
 				{{ streamer.username[0].toUpperCase() }}
 			</div>
@@ -106,13 +106,13 @@
 			/>
 		</div>
 
-		<CardContent class="p-3 flex flex-col gap-2">
-			<div class="flex items-center justify-between">
+		<CardContent class="p-2 flex flex-col gap-1.5 sm:p-3 sm:gap-2">
+			<div class="flex items-center justify-between gap-1">
 				<a
 					:href="profileUrl"
 					target="_blank"
 					rel="noopener noreferrer"
-					class="min-w-0 flex-1 truncate text-sm font-semibold hover:underline"
+					class="min-w-0 flex-1 truncate text-xs font-semibold hover:underline sm:text-sm"
 					:title="streamer.username"
 				>
 					{{ streamer.username }}
@@ -120,32 +120,32 @@
 				<Button
 					variant="ghost"
 					size="icon"
-					class="h-6 w-6 shrink-0 text-muted-foreground hover:text-destructive"
+					class="h-5 w-5 shrink-0 text-muted-foreground hover:text-destructive sm:h-6 sm:w-6"
 					:title="t('streamerCard.removeTitle')"
 					@click="emit('remove')"
 				>
-					<X class="size-3.5" />
+					<X class="size-3 sm:size-3.5" />
 				</Button>
 			</div>
 
-			<div class="flex items-center gap-1.5 flex-wrap">
-				<Badge :class="statusClass(streamer)">
+			<div class="flex items-center gap-1 flex-wrap sm:gap-1.5">
+				<Badge :class="[statusClass(streamer), 'max-w-full truncate px-1.5 text-[10px] sm:px-2 sm:text-xs']">
 					{{ streamer.is_online ? streamer.status : t("streamerCard.offline") }}
 				</Badge>
-				<Badge v-if="streamer.is_recording" variant="destructive">{{ t("streamerCard.recording") }}</Badge>
+				<Badge v-if="streamer.is_recording" variant="destructive" class="px-1.5 text-[10px] sm:px-2 sm:text-xs">{{ t("streamerCard.recording") }}</Badge>
 				<span
 					v-if="streamer.is_online && streamer.viewers > 0"
-					class="text-xs text-muted-foreground flex items-center gap-1"
+					class="text-[10px] text-muted-foreground flex items-center gap-1 sm:text-xs"
 				>
 					<Eye class="size-3" /> {{ streamer.viewers.toLocaleString() }}
 				</span>
 			</div>
 
-			<div class="flex items-center gap-2 mt-0.5">
+			<div class="flex flex-col items-stretch gap-1.5 mt-0.5 sm:flex-row sm:items-center sm:gap-2">
 				<Button
 					v-if="!streamer.is_recording"
 					size="sm"
-					class="flex-1"
+					class="w-full h-7 px-1 text-xs sm:h-8 sm:flex-1 sm:px-3"
 					:disabled="!streamer.is_recordable"
 					:title="!streamer.is_recordable ? streamer.status : ''"
 					@click="emit('start')"
@@ -156,13 +156,13 @@
 					v-else
 					size="sm"
 					variant="destructive"
-					class="flex-1"
+					class="w-full h-7 px-1 text-xs sm:h-8 sm:flex-1 sm:px-3"
 					@click="emit('stop')"
 				>
 					{{ t("streamerCard.stopRecording") }}
 				</Button>
 
-				<div class="flex items-center gap-1.5 shrink-0" :title="t('streamerCard.autoRecordTitle')">
+				<div class="flex items-center justify-between gap-1 shrink-0 sm:justify-start sm:gap-1.5" :title="t('streamerCard.autoRecordTitle')">
 					<Switch
 						:id="`auto-${streamer.username}`"
 						:model-value="autoRecord"
@@ -170,7 +170,7 @@
 					/>
 					<Label
 						:for="`auto-${streamer.username}`"
-						class="text-xs text-muted-foreground select-none"
+						class="text-[10px] text-muted-foreground select-none sm:text-xs"
 					>
 						{{ t("streamerCard.autoRecord") }}
 					</Label>
@@ -178,9 +178,9 @@
 			</div>
 
 			<!-- 转发流地址（始终显示）/ Stream URL (always shown) -->
-			<div class="flex items-center gap-2">
+			<div class="flex items-center gap-1 sm:gap-2">
 				<div
-					class="flex-1 text-xs font-mono text-blue-400/60 bg-blue-950/10 rounded px-2 py-1 truncate select-all"
+					class="flex-1 text-[10px] font-mono text-blue-400/60 bg-blue-950/10 rounded px-1 py-1 truncate select-all sm:px-2 sm:text-xs"
 					:title="t('streamerCard.streamUrlHint')"
 				>
 					{{ streamUrl }}
@@ -188,7 +188,7 @@
 				<Button
 					size="sm"
 					variant="ghost"
-					class="shrink-0 px-2 h-6 text-muted-foreground hover:text-blue-300"
+					class="shrink-0 px-1.5 h-6 text-muted-foreground hover:text-blue-300 sm:px-2"
 					:title="t('streamerCard.copyStreamUrl')"
 					@click="copyStreamUrl"
 				>

@@ -156,7 +156,7 @@
 
 		<div
 			v-else
-			class="grid grid-cols-1 gap-3.5 sm:grid-cols-[repeat(auto-fill,minmax(260px,1fr))]"
+			class="grid grid-cols-3 gap-1.5 sm:grid-cols-[repeat(auto-fill,minmax(260px,1fr))] sm:gap-3.5"
 		>
 			<StreamerCard
 				v-for="s in [...store.streamers].sort((a, b) =>
